@@ -1,8 +1,10 @@
+using Gherkin;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using RestSharp;
 using SwaggerPetstoreOpenAPIRestSharpProject.API.API;
 using SwaggerPetstoreOpenAPIRestSharpProject.MODELS.RequestAndResponse.Pet;
+using System.Collections.Generic;
 using System.Net;
 
 namespace SwaggerPetstoreOpenAPIRestSharpProject.SpecFlow.StepDefinitions
@@ -28,9 +30,6 @@ namespace SwaggerPetstoreOpenAPIRestSharpProject.SpecFlow.StepDefinitions
         {
             
         }
-      //  When I send a POST request to "/pet" with the following data:
-      //| name    | type  | status    |
-      //| Dog     | Dog   | available |
 
         [When(@"I send a POST request to ""([^""]*)"" with the following data:")]
         public async Task WhenISendAPOSTRequestToWithTheFollowingData(string p0, Table table)
@@ -81,26 +80,50 @@ namespace SwaggerPetstoreOpenAPIRestSharpProject.SpecFlow.StepDefinitions
             var expectedAvailable = available;
             // Deserialize response JSON to an object
             var responseBody = JsonConvert.DeserializeObject<PetReqResponse>(_response.Content);
+            //IDNewPet = responseBody.Id;
             // Validate that the response contains the expected pet name
             Assert.AreEqual(expectedAvailable, responseBody.Status);
         }
 
+        int IDNewPet = 0;
+
         [Given(@"I have a pet with ID ""([^""]*)""")]
         public void GivenIHaveAPetWithID(string p0)
         {
-            throw new PendingStepException();
+            if( p0 == "last-added")
+            {
+                Console.WriteLine(IDNewPet);
+            }
+            IDNewPet = Convert.ToInt32(p0);
+            Console.WriteLine(p0);
         }
 
         [When(@"I send a PUT request to ""([^""]*)"" with the following data:")]
-        public void WhenISendAPUTRequestToWithTheFollowingData(string p0, Table table)
+        public async Task WhenISendAPUTRequestToWithTheFollowingData(string p0, Table table)
         {
-            throw new PendingStepException();
+            //if (p0 == "last-added")
+            //{
+                _petReqResponse.Id = IDNewPet;
+                _petReqResponse.Name = table.Rows[0]["name"];
+                _petReqResponse.Category = new Category
+                {
+                    Name = table.Rows[0]["type"]
+                };
+                _petReqResponse.Status = table.Rows[0]["status"];
+            //}
+            // Send request to the API
+            _response = await api.UpdatePet(_petReqResponse);
         }
 
         [Then(@"the response body should contain the pet ID ""([^""]*)""")]
         public void ThenTheResponseBodyShouldContainThePetID(string p0)
         {
-            throw new PendingStepException();
+            //if (p0 == "last-added")
+            //{ // Deserialize response JSON to an object
+              var responseBody = JsonConvert.DeserializeObject<PetReqResponse>(_response.Content);
+               // Validate that the response contains the expected pet name
+               Assert.AreEqual(IDNewPet, responseBody.Id);
+            //}
         }
 
         [Given(@"I am a guest user")]

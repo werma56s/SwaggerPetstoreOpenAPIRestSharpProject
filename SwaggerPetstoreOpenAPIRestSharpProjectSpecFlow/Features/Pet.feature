@@ -9,16 +9,16 @@
     Then the response status code should be 200
     And the response body should contain the name "DogWG"
     And the pet status should be "available"
-#
-##PUT /pet – Update an existing pet
-#   Scenario: Successfully update an existing pet
-#    Given I have a pet with ID "1234"
-#    When I send a PUT request to "/pet" with the following data:
-#      | id   | name  | type  | status    |
-#      | 1234 | Dog   | Dog   | sold      |
-#    Then the response status code should be 200
-#    And the response body should contain the pet ID "1234"
-#    And the pet status should be "sold"
+
+#PUT /pet – Update an existing pet
+   Scenario: Successfully update an existing pet
+    Given I have a pet with ID "4"
+    When I send a PUT request to "/pet" with the following data:
+      | id   | name  | type  | status    |
+      | 4 | Dog   | Dog   | sold      |
+    Then the response status code should be 200
+    And the response body should contain the pet ID "4"
+    And the pet status should be "sold"
 #
 ##GET /pet/findByStatus – Finds Pets by status
 #    Scenario: Retrieve pets with the status "available"
