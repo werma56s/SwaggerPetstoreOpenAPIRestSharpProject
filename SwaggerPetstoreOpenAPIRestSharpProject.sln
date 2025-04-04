@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SwaggerPetstoreOpenAPIRestS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SwaggerPetstoreOpenAPIRestSharpProject.MODELS", "SwaggerPetstoreOpenAPIRestSharpProject.MODELS\SwaggerPetstoreOpenAPIRestSharpProject.MODELS.csproj", "{BFB09F9F-9BFA-452B-A834-D3859819EC7E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SwaggerPetstoreOpenAPIRestSharpProject.SpecFlow", "SwaggerPetstoreOpenAPIRestSharpProject.SpecFlow\SwaggerPetstoreOpenAPIRestSharpProject.SpecFlow.csproj", "{1A5BEDE3-BB60-4A44-B326-8440F3D9A1CA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SwaggerPetstoreOpenAPIRestSharpProjectSpecFlow", "SwaggerPetstoreOpenAPIRestSharpProjectSpecFlow\SwaggerPetstoreOpenAPIRestSharpProjectSpecFlow.csproj", "{5185E6E8-E75E-438C-A9F5-963B763F6025}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{BFB09F9F-9BFA-452B-A834-D3859819EC7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BFB09F9F-9BFA-452B-A834-D3859819EC7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BFB09F9F-9BFA-452B-A834-D3859819EC7E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1A5BEDE3-BB60-4A44-B326-8440F3D9A1CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1A5BEDE3-BB60-4A44-B326-8440F3D9A1CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1A5BEDE3-BB60-4A44-B326-8440F3D9A1CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1A5BEDE3-BB60-4A44-B326-8440F3D9A1CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5185E6E8-E75E-438C-A9F5-963B763F6025}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5185E6E8-E75E-438C-A9F5-963B763F6025}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5185E6E8-E75E-438C-A9F5-963B763F6025}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5185E6E8-E75E-438C-A9F5-963B763F6025}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

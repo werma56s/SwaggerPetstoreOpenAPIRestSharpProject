@@ -9,9 +9,9 @@ namespace SwaggerPetstoreOpenAPIRestSharpProject.API.API
     {
         readonly RestClient _restClient;
 
-        public APIClientPet(string baseUrl)
+        public APIClientPet()
         {
-            var option = new RestClientOptions(baseUrl);
+            var option = new RestClientOptions(Endpoints.Endpoints.BaseUrl);
             _restClient = new RestClient(option);
         }
         // Create a new pet in the store

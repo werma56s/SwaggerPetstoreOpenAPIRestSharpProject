@@ -1,39 +1,88 @@
-using System;
-using TechTalk.SpecFlow;
+using Newtonsoft.Json;
+using NUnit.Framework;
+using RestSharp;
+using SwaggerPetstoreOpenAPIRestSharpProject.API.API;
+using SwaggerPetstoreOpenAPIRestSharpProject.MODELS.RequestAndResponse.Pet;
+using System.Net;
 
 namespace SwaggerPetstoreOpenAPIRestSharpProject.SpecFlow.StepDefinitions
 {
     [Binding]
     public class PetStepDefinitions
     {
+        private PetReqResponse _petReqResponse;
+        private RestResponse _response;
+        private ScenarioContext _scenarioContext;
+        private HttpStatusCode _statusCode;
+        APIClientPet api;
+
+        public PetStepDefinitions(PetReqResponse petReqResponse,  ScenarioContext scenarioContext)
+        {
+            _scenarioContext = scenarioContext;
+            _petReqResponse = petReqResponse;
+            api = new APIClientPet();
+        }
+
         [Given(@"I am an authorized user")]
         public void GivenIAmAnAuthorizedUser()
         {
-            throw new PendingStepException();
+            
         }
+      //  When I send a POST request to "/pet" with the following data:
+      //| name    | type  | status    |
+      //| Dog     | Dog   | available |
 
         [When(@"I send a POST request to ""([^""]*)"" with the following data:")]
-        public void WhenISendAPOSTRequestToWithTheFollowingData(string p0, Table table)
+        public async Task WhenISendAPOSTRequestToWithTheFollowingData(string p0, Table table)
         {
-            throw new PendingStepException();
+            _petReqResponse = new PetReqResponse
+            {
+                Name = table.Rows[0]["name"],
+                Category = new Category
+                {
+                    Name = table.Rows[0]["type"]
+                },
+                Status = table.Rows[0]["status"],
+                PhotoUrls = new string[] { table.Rows[0]["photoUrls"] },
+                Tags = new Tag[]
+                {
+                    new Tag
+                    {
+                        Name = "cute"
+                    }
+                }
+            };
+            // Send request to the API
+            _response = await api.CreatePet(_petReqResponse);
+
         }
 
         [Then(@"the response status code should be (.*)")]
         public void ThenTheResponseStatusCodeShouldBe(int p0)
         {
-            throw new PendingStepException();
+            _statusCode = _response.StatusCode;
+            var code = (int)_statusCode;
+            Assert.AreEqual(p0, code);
         }
 
         [Then(@"the response body should contain the name ""([^""]*)""")]
-        public void ThenTheResponseBodyShouldContainTheName(string dog)
+        public void ThenTheResponseBodyShouldContainTheName(string dogName)
         {
-            throw new PendingStepException();
+            var expectedName = dogName;
+            // Deserialize response JSON to an object
+            var responseBody = JsonConvert.DeserializeObject<PetReqResponse>(_response.Content);
+            // Validate that the response contains the expected pet name
+            Assert.AreEqual(expectedName, responseBody.Name);
         }
 
         [Then(@"the pet status should be ""([^""]*)""")]
         public void ThenThePetStatusShouldBe(string available)
         {
-            throw new PendingStepException();
+            var expectedAvailable = available;
+            // Deserialize response JSON to an object
+            var responseBody = JsonConvert.DeserializeObject<PetReqResponse>(_response.Content);
+            // Validate that the response contains the expected pet name
+            Assert.AreEqual(expectedAvailable, responseBody.Status);
         }
 
         [Given(@"I have a pet with ID ""([^""]*)""")]
