@@ -8,7 +8,7 @@ namespace SwaggerPetstoreOpenAPIRestSharpProject.MODELS.RequestAndResponse.Pet
 {
     public class PetReqResponse
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public string Name { get; set; }
         public Category Category { get; set; }
         public string[] PhotoUrls { get; set; }
@@ -18,13 +18,13 @@ namespace SwaggerPetstoreOpenAPIRestSharpProject.MODELS.RequestAndResponse.Pet
 
     public class Category
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public string Name { get; set; }
     }
 
     public class Tag
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public string Name { get; set; }
     }
 
