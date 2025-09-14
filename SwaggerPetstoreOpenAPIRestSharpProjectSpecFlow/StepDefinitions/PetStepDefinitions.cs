@@ -2,10 +2,13 @@ using Gherkin;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using RestSharp;
+using RestSharp.Serializers;
 using SwaggerPetstoreOpenAPIRestSharpProject.API.API;
+using SwaggerPetstoreOpenAPIRestSharpProject.MODELS.Enums;
 using SwaggerPetstoreOpenAPIRestSharpProject.MODELS.RequestAndResponse.Pet;
 using System.Collections.Generic;
 using System.Net;
+using System.Diagnostics;
 
 namespace SwaggerPetstoreOpenAPIRestSharpProject.SpecFlow.StepDefinitions
 {
@@ -20,13 +23,14 @@ namespace SwaggerPetstoreOpenAPIRestSharpProject.SpecFlow.StepDefinitions
 
         public PetStepDefinitions(PetReqResponse petReqResponse,  ScenarioContext scenarioContext)
         {
+            _statusCode = new HttpStatusCode();
             _scenarioContext = scenarioContext;
             _petReqResponse = petReqResponse;
             api = new APIClientPet();
         }
 
-        [Given(@"I am an authorized user")]
-        public void GivenIAmAnAuthorizedUser()
+        [Given(@"I am a ""([^""]*)"" user")]
+        public void GivenIAmAUser(string role)
         {
             
         }
@@ -101,8 +105,6 @@ namespace SwaggerPetstoreOpenAPIRestSharpProject.SpecFlow.StepDefinitions
         [When(@"I send a PUT request to ""([^""]*)"" with the following data:")]
         public async Task WhenISendAPUTRequestToWithTheFollowingData(string p0, Table table)
         {
-            //if (p0 == "last-added")
-            //{
                 _petReqResponse.Id = IDNewPet;
                 _petReqResponse.Name = table.Rows[0]["name"];
                 _petReqResponse.Category = new Category
@@ -110,7 +112,7 @@ namespace SwaggerPetstoreOpenAPIRestSharpProject.SpecFlow.StepDefinitions
                     Name = table.Rows[0]["type"]
                 };
                 _petReqResponse.Status = table.Rows[0]["status"];
-            //}
+            
             // Send request to the API
             _response = await api.UpdatePet(_petReqResponse);
         }
@@ -126,34 +128,96 @@ namespace SwaggerPetstoreOpenAPIRestSharpProject.SpecFlow.StepDefinitions
             //}
         }
 
-        [Given(@"I am a guest user")]
-        public void GivenIAmAGuestUser()
+        [When(@"I send a GET request to method ""([^""]*)"" and parm ""([^""]*)""")]
+        public async Task WhenISendAGETRequestToMethodAndParm(string findByStatus, string parm)
         {
-            throw new PendingStepException();
+            switch (findByStatus)
+            {
+                case "findByStatus":
+                    if (parm == "available" || parm == "pending" || parm == "sold")
+                    {
+                        // Convert string to FindeByStatus enum
+                        if (Enum.TryParse<FindeByStatus>(parm, true, out var statusEnum))
+                        {
+                            _response = await api.GetFindeByStatusPet(statusEnum);
+                        }
+                        else
+                        {
+                            throw new ArgumentException($"Invalid status value: {parm}");
+                        }
+                    }
+                    break;
+                  case "findByTags":
+                    _response = await api.GetFindeByTagsPet(parm);
+                   break;
+                  case "findByID":
+                    int id;
+                    if (int.TryParse(parm, out id))
+                    {
+                        _response = await api.GetFindeByIDPet(id);
+                    }
+                    else
+                    {
+                        throw new ArgumentException($"Invalid ID value: {parm}");
+                    }
+                  break;
+            }
         }
 
-        [When(@"I send a GET request to ""([^""]*)""")]
-        public void WhenISendAGETRequestTo(string p0)
-        {
-            throw new PendingStepException();
-        }
 
         [Then(@"the response body should contain a list of pets with status ""([^""]*)""")]
-        public void ThenTheResponseBodyShouldContainAListOfPetsWithStatus(string available)
+        public async Task ThenTheResponseBodyShouldContainAListOfPetsWithStatusAsync(string parm)
         {
-            throw new PendingStepException();
+            // Deserialize JSON
+            string json = _response.Content;
+            var pets = JsonConvert.DeserializeObject<List<MODELS.RequestAndResponse.Pet.PetReqResponse>>(json);
+
+            // 
+            Assert.IsTrue(pets.All(p => p.Status == parm), "Not all pets are available!");
         }
 
         [Then(@"the response body should contain a list of pets with the tag ""([^""]*)""")]
-        public void ThenTheResponseBodyShouldContainAListOfPetsWithTheTag(string cute)
+        public void ThenTheResponseBodyShouldContainAListOfPetsWithTheTag(string parm)
         {
-            throw new PendingStepException();
+            string json = _response.Content;
+
+            // Try deserializing as a list first
+            List<MODELS.RequestAndResponse.Pet.PetReqResponse> pets;
+
+            if (json.TrimStart().StartsWith("["))
+            {
+                pets = JsonConvert.DeserializeObject<List<MODELS.RequestAndResponse.Pet.PetReqResponse>>(json);
+            }
+            else
+            {
+                // If JSON is a single object, wrap it into a list
+                var singlePet = JsonConvert.DeserializeObject<MODELS.RequestAndResponse.Pet.PetReqResponse>(json);
+                pets = new List<MODELS.RequestAndResponse.Pet.PetReqResponse> { singlePet };
+            }
+            // 
+            Assert.IsTrue(pets.All(p => p.Tags.First().Name == parm), $"Not all pets have parm: {parm}!");
         }
 
         [Then(@"the pet name should not be empty")]
         public void ThenThePetNameShouldNotBeEmpty()
         {
-            throw new PendingStepException();
+            string json = _response.Content;
+
+            // Try deserializing as a list first
+            List<MODELS.RequestAndResponse.Pet.PetReqResponse> pets;
+
+            if (json.TrimStart().StartsWith("["))
+            {
+                pets = JsonConvert.DeserializeObject<List<MODELS.RequestAndResponse.Pet.PetReqResponse>>(json);
+            }
+            else
+            {
+                // If JSON is a single object, wrap it into a list
+                var singlePet = JsonConvert.DeserializeObject<MODELS.RequestAndResponse.Pet.PetReqResponse>(json);
+                pets = new List<MODELS.RequestAndResponse.Pet.PetReqResponse> { singlePet };
+            }
+            // Assert all pet names are not null or empty
+            Assert.IsTrue(pets.All(p => !string.IsNullOrEmpty(p.Name)), "Some pets have empty names!");
         }
 
         [When(@"I send a POST request to ""([^""]*)"" with form data:")]
@@ -189,7 +253,6 @@ namespace SwaggerPetstoreOpenAPIRestSharpProject.SpecFlow.StepDefinitions
         [Then(@"the image should be successfully uploaded")]
         public void ThenTheImageShouldBeSuccessfullyUploaded()
         {
-            throw new PendingStepException();
         }
     }
 }
